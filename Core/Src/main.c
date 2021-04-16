@@ -122,7 +122,7 @@ int main(void)
 	  	Timestamp_Encoder = micros();
 	  	//ยิ่งคูณตัวคูณมากทำให้เวลาช้าลง และแลคมากขึ้นเพราะลู่เข้าช้าลง แต่ละเอียดขึ้น
 	  	EncoderVel = ((EncoderVel * 999) + EncoderVelocity_Update()) / 1000.0; //pulse per sec
-	  	RPM = EncoderVel*60/768.0;
+	  	RPM = EncoderVel*60/3072.0; //rpm
 	  }
   }
   /* USER CODE END 3 */

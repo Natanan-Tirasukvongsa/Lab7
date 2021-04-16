@@ -632,7 +632,7 @@ int main(void)
  8000772:	eec7 7a26 	vdiv.f32	s15, s14, s13
  8000776:	4b0c      	ldr	r3, [pc, #48]	; (80007a8 <main+0xb4>)
  8000778:	edc3 7a00 	vstr	s15, [r3]
-	  	RPM = EncoderVel*60/768.0;
+	  	RPM = EncoderVel*60/3072.0; //rpm
  800077c:	4b0a      	ldr	r3, [pc, #40]	; (80007a8 <main+0xb4>)
  800077e:	edd3 7a00 	vldr	s15, [r3]
  8000782:	ed9f 7a0c 	vldr	s14, [pc, #48]	; 80007b4 <main+0xc0>
@@ -651,7 +651,7 @@ int main(void)
  80007ac:	4479c000 	.word	0x4479c000
  80007b0:	447a0000 	.word	0x447a0000
  80007b4:	42700000 	.word	0x42700000
- 80007b8:	44400000 	.word	0x44400000
+ 80007b8:	45400000 	.word	0x45400000
  80007bc:	20000048 	.word	0x20000048
 
 080007c0 <SystemClock_Config>:
