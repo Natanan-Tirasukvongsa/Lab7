@@ -46,6 +46,10 @@ TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint64_t _micros = 0;
+float EncoderVel = 0;
+uint64_t Timestamp_Encoder = 0;
+float RPM = 0;
 
 /* USER CODE END PV */
 
@@ -56,7 +60,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
+uint64_t micros();
+float EncoderVelocity_Update();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -96,6 +101,8 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
 
   /* USER CODE END 2 */
 
@@ -106,6 +113,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  //Add LPF? //10000 us //10ms
+	  //ความถี่สูง อัพเดทเร็ว control ง่าย
+	  //ยิ่งเร็วความเสถียรของว encoder ต่ำลง
+	  //เพิ่มเวลาลด sampling
+	  if (micros() - Timestamp_Encoder >= 100)
+	  {
+	  	Timestamp_Encoder = micros();
+	  	//ยิ่งคูณตัวคูณมากทำให้เวลาช้าลง และแลคมากขึ้นเพราะลู่เข้าช้าลง แต่ละเอียดขึ้น
+	  	EncoderVel = ((EncoderVel * 999) + EncoderVelocity_Update()) / 1000.0; //pulse per sec
+	  	RPM = EncoderVel*60/768.0;
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -316,6 +334,58 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+#define  HTIM_ENCODER htim1
+#define  MAX_SUBPOSITION_OVERFLOW 1536 //gain
+#define  MAX_ENCODER_PERIOD 3072
+
+float EncoderVelocity_Update() //angular velocity
+{
+	//Save Last state
+	static uint32_t EncoderLastPosition = 0; //เก็บค่าของรอบที่แล้วถึงแม้ว่า function จะจบไปแล้ว
+	static uint64_t EncoderLastTimestamp = 0; //เท่ากับ 0 จะไม่ถูกเรียกใช้ใหม่
+
+	//read data
+	uint32_t EncoderNowPosition = HTIM_ENCODER.Instance->CNT; //TIM1->CNT ตำแหน่ง memory
+	uint64_t EncoderNowTimestamp = micros();
+
+	int32_t EncoderPositionDiff;
+	uint64_t EncoderTimeDiff;
+
+	EncoderTimeDiff = EncoderNowTimestamp - EncoderLastTimestamp; //dt
+	EncoderPositionDiff = EncoderNowPosition - EncoderLastPosition; //dp
+
+	//compensate overflow and underflow
+	if (EncoderPositionDiff >= MAX_SUBPOSITION_OVERFLOW) //ค่าสูงสุดที่รับได้
+	{
+		EncoderPositionDiff -= MAX_ENCODER_PERIOD;
+	}
+	else if (-EncoderPositionDiff >= MAX_SUBPOSITION_OVERFLOW)
+	{
+		EncoderPositionDiff += MAX_ENCODER_PERIOD;
+	}
+
+	//Update Position and time
+	EncoderLastPosition = EncoderNowPosition;
+	EncoderLastTimestamp = EncoderNowTimestamp;
+
+	//Calculate velocity
+	//EncoderTimeDiff is in uS
+	return (EncoderPositionDiff * 1000000) / (float) EncoderTimeDiff; //pulse per sec
+
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim == &htim2)
+	{
+		_micros += 4294967295;
+	}
+}
+
+uint64_t micros()
+{
+	return _micros + htim2.Instance->CNT;
+}
 
 /* USER CODE END 4 */
 
