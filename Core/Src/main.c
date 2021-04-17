@@ -55,7 +55,12 @@ float desire = 10;
 uint16_t PWMOut = 0;
 float edot = 0;
 float eprev = 0;
+float eint = 0;
 float e = 0;
+float Kp = 0;
+float Kd = 0;
+float Ki = 0;
+float bias = 0;
 
 /* USER CODE END PV */
 
@@ -145,6 +150,7 @@ int main(void)
 	  {
 		  //eint = 0;
 		  //eprev = 0;
+		  //repeat every dt second
 		  //e = desired - read_sensor()
 		  //edot = (e-eprev)/dt
 		  //eint = eint + e*dt
@@ -152,17 +158,28 @@ int main(void)
 		  //eprev = e
 		  //send_control(u)
 
+		  e = desire - RPM;
+		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
+		  eint = eint + e/10000.0; //eint = eint + e*100 us = eint + e/10000.0 second
+		  PWMOut = 30000*e + 5 *eint + 50*edot;
+		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
 
 	  }
 	  else if (desire == 0)
 	  {
-
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
 	  }
 	  else
 	  {
-
+		  e = desire - RPM;
+		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
+		  PWMOut = Kp*e + Ki*eint + Kd*edot;
+		  eprev = e;
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, PWMOut);
 	  }
   }
   /* USER CODE END 3 */
