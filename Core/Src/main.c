@@ -154,14 +154,14 @@ int main(void)
 		  //e = desired - read_sensor()
 		  //edot = (e-eprev)/dt
 		  //eint = eint + e*dt
-		  //u = Kp*e + Ki*eint + Kd*edot
+		  //u = Kp*e + Ki*eint + Kd*edot + bias
 		  //eprev = e
 		  //send_control(u)
 
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
 		  eint = eint + e/10000.0; //eint = eint + e*100 us = eint + e/10000.0 second
-		  PWMOut = 30000*e + 5 *eint + 50*edot;
+		  PWMOut = 15000*e + 150*eint + 50*edot + 2500;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
@@ -176,7 +176,7 @@ int main(void)
 	  {
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
-		  PWMOut = Kp*e + Ki*eint + Kd*edot;
+		  PWMOut = -15000*e -150*eint -50*edot +2000;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, PWMOut);
@@ -374,7 +374,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 3071;
+  htim3.Init.Period = 64511;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
