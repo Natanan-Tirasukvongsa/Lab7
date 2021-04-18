@@ -57,10 +57,10 @@ float edot = 0;
 float eprev = 0;
 float eint = 0;
 float e = 0;
-float Kp = 0;
-float Kd = 0;
-float Ki = 0;
-float bias = 0;
+//float Kp = 0;
+//float Kd = 0;
+//float Ki = 0;
+//float bias = 0;
 
 /* USER CODE END PV */
 
