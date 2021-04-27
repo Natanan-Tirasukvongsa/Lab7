@@ -161,7 +161,7 @@ int main(void)
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
 		  eint = eint + e/10000.0; //eint = eint + e*100 us = eint + e/10000.0 second
-		  Kp = 15; Ki = 15; Kd = 5; bias = 2.5;
+		  Kp = 5; Ki = 0.1; Kd = 3; bias = 1.5;
 		  PWMOut = Kp*1000.0*e + Ki*10*eint + Kd*10*edot + bias*1000.0;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
@@ -178,7 +178,7 @@ int main(void)
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
 		  eint = eint + e/10000.0;
-		  Kp = -15; Ki = -15; Kd = -5; bias = 2;
+		  Kp = -5; Ki = -0.1; Kd = -3; bias = 1.25;
 		  PWMOut = Kp*1000.0*e +Ki*10.0*eint +Kd*10.0*edot +bias*1000.0;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
