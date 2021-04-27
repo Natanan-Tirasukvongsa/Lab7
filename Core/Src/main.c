@@ -57,10 +57,10 @@ float edot = 0;
 float eprev = 0;
 float eint = 0;
 float e = 0;
-//float Kp = 0;
-//float Kd = 0;
-//float Ki = 0;
-//float bias = 0;
+float Kp = 0;
+float Kd = 0;
+float Ki = 0;
+float bias = 0;
 
 /* USER CODE END PV */
 
@@ -161,7 +161,8 @@ int main(void)
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
 		  eint = eint + e/10000.0; //eint = eint + e*100 us = eint + e/10000.0 second
-		  PWMOut = 15000*e + 150*eint + 50*edot + 2500;
+		  Kp = 15; Ki = 15; Kd = 5; bias = 2.5;
+		  PWMOut = Kp*1000.0*e + Ki*10*eint + Kd*10*edot + bias*1000.0;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
@@ -176,7 +177,9 @@ int main(void)
 	  {
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
-		  PWMOut = -15000*e -150*eint -50*edot +2000;
+		  eint = eint + e/10000.0;
+		  Kp = -15; Ki = -15; Kd = -5; bias = 2;
+		  PWMOut = Kp*1000.0*e +Ki*10.0*eint +Kd*10.0*edot +bias*1000.0;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, PWMOut);
