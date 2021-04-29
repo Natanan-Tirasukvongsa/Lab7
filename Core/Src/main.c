@@ -166,7 +166,7 @@ int main(void)
 		  	  			  e = desire - RPM;
 		  	  			  edot = (e-eprev)*1000.0; //(e-eprev)/1000 us = (e-eprev)*10000.0 second
 		  	  			  eint = eint + e/1000.0; //eint = eint + e*1000 us = eint + e/10000.0 second
-		  	  			  //Kp = 4000; Ki = 2000; Kd = 42; bias = 0;
+		  	  			  Kp = 4000; Ki = 2000; Kd = 60; bias = 8000;
 		  	  			  PWM = Kp*e + Ki*eint + Kd*edot + bias;
 
 		  	  			  if (PWM > 10000)
