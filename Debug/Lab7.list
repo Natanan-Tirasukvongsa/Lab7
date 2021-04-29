@@ -39,9 +39,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  17 .debug_line   000076d8  00000000  00000000  00041e60  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    0008891a  00000000  00000000  00049538  2**0
+ 18 .debug_str    0008891b  00000000  00000000  00049538  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  000d1e52  2**0
+ 19 .comment      0000007b  00000000  00000000  000d1e53  2**0
                   CONTENTS, READONLY
  20 .debug_frame  000030a0  00000000  00000000  000d1ed0  2**2
                   CONTENTS, READONLY, DEBUGGING
@@ -1389,7 +1389,7 @@ int main(void)
  8001068:	4602      	mov	r2, r0
  800106a:	4b6e      	ldr	r3, [pc, #440]	; (8001224 <main+0x2f4>)
  800106c:	601a      	str	r2, [r3, #0]
-		  //Kp = 8000; Ki = 1; Kd = 60; bias = 0;
+		  //Kp = 5000; Ki = 0.25; Kd = 150; bias = 0;
 		  PWMOut = Kp*e + Ki*eint + Kd*edot + bias;
  800106e:	4b6e      	ldr	r3, [pc, #440]	; (8001228 <main+0x2f8>)
  8001070:	ed93 7a00 	vldr	s14, [r3]
@@ -1501,7 +1501,7 @@ int main(void)
  800116a:	4602      	mov	r2, r0
  800116c:	4b2d      	ldr	r3, [pc, #180]	; (8001224 <main+0x2f4>)
  800116e:	601a      	str	r2, [r3, #0]
-		  //Kp = -8000; Ki = -1; Kd = -60; bias = 0;
+		  //Kp = -5000; Ki = -0.25; Kd = -150; bias = 0;
 		  PWMOut = Kp*e +Ki*eint +Kd*edot +bias;
  8001170:	4b2d      	ldr	r3, [pc, #180]	; (8001228 <main+0x2f8>)
  8001172:	ed93 7a00 	vldr	s14, [r3]
@@ -2355,7 +2355,7 @@ static void MX_GPIO_Init(void)
 080016d8 <EncoderVelocity_Update>:
 #define  HTIM_ENCODER htim3
 #define  MAX_SUBPOSITION_OVERFLOW 1536 //gain
-#define  MAX_ENCODER_PERIOD 3072
+#define  MAX_ENCODER_PERIOD 64512
 
 float EncoderVelocity_Update() //angular velocity
 {
@@ -2404,7 +2404,7 @@ float EncoderVelocity_Update() //angular velocity
 	{
 		EncoderPositionDiff -= MAX_ENCODER_PERIOD;
  8001720:	697b      	ldr	r3, [r7, #20]
- 8001722:	f5a3 6340 	sub.w	r3, r3, #3072	; 0xc00
+ 8001722:	f5a3 437c 	sub.w	r3, r3, #64512	; 0xfc00
  8001726:	617b      	str	r3, [r7, #20]
  8001728:	e008      	b.n	800173c <EncoderVelocity_Update+0x64>
 	}
@@ -2416,7 +2416,7 @@ float EncoderVelocity_Update() //angular velocity
 	{
 		EncoderPositionDiff += MAX_ENCODER_PERIOD;
  8001734:	697b      	ldr	r3, [r7, #20]
- 8001736:	f503 6340 	add.w	r3, r3, #3072	; 0xc00
+ 8001736:	f503 437c 	add.w	r3, r3, #64512	; 0xfc00
  800173a:	617b      	str	r3, [r7, #20]
 	}
 

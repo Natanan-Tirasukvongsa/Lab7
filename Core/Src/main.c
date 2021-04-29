@@ -161,7 +161,7 @@ int main(void)
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
 		  eint = eint + e/10000.0; //eint = eint + e*100 us = eint + e/10000.0 second
-		  //Kp = 8000; Ki = 0.5; Kd = 60; bias = 0;
+		  //Kp = 5000; Ki = 0.25; Kd = 150; bias = 0;
 		  PWMOut = Kp*e + Ki*eint + Kd*edot + bias;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
@@ -178,7 +178,7 @@ int main(void)
 		  e = desire - RPM;
 		  edot = (e-eprev)*10000.0; //(e-eprev)/100 us = (e-eprev)*10000.0 second
 		  eint = eint + e/10000.0;
-		  //Kp = -8000; Ki = 0.25; Kd = -100; bias = 0;
+		  //Kp = -5000; Ki = -0.25; Kd = -150; bias = 0;
 		  PWMOut = Kp*e +Ki*eint +Kd*edot +bias;
 		  eprev = e;
 		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
@@ -474,7 +474,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 #define  HTIM_ENCODER htim3
 #define  MAX_SUBPOSITION_OVERFLOW 1536 //gain
-#define  MAX_ENCODER_PERIOD 3072
+#define  MAX_ENCODER_PERIOD 64512
 
 float EncoderVelocity_Update() //angular velocity
 {
