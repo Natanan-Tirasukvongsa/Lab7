@@ -64,6 +64,14 @@ float Ki = 0;
 float bias = 0;
 float PWM =0;
 
+//trapezodial
+//uint64_t sec = 0;
+//uint64_t t_o = 1000000;
+//uint64_t t_f = 6;
+//float V = 0;
+//float T = 0;
+//int on = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,6 +84,7 @@ static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 uint64_t micros();
 float EncoderVelocity_Update();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -151,54 +160,86 @@ int main(void)
 	  if (micros() - Time >= 1000)
 	  {
 		  Time = micros();
+//		  if (T>=0 && T< 2)
+//		  {
+//			  V = desire*T/2;
+//			  T += 0.001;
+//			  on = 1;
+//		  }
+//		  else if (T >= 2 && T<3)
+//		  {
+//			  V = V;
+//			  T += 0.001;
+//			  on = 2;
+//		  }
+//		  else if (T >= 3 && T < 5)
+//		  {
+//			  V  = (5*desire - desire*T)/2;
+//			  T += 0.001;
+//			  on =3;
+//		  }
+//		  else if (T >= 5 && T < 10)
+//		  {
+//			  T += 0.001;
+//			  on = 4;
+//			  V = 0;
+//		  }
+//		  else if (T >= 10)
+//		  {
+//			  T = 0;
+//			  on = 5;
+//		  }
+
+
 		  if (desire != 0 )
-		  	  		  {
-		  	  			  //eint = 0;
-		  	  			  //eprev = 0;
-		  	  			  //repeat every dt second
-		  	  			  //e = desired - read_sensor()
-		  	  			  //edot = (e-eprev)/dt
-		  	  			  //eint = eint + e*dt
-		  	  			  //u = Kp*e + Ki*eint + Kd*edot + bias
-		  	  			  //eprev = e
-		  	  			  //send_control(u)
+		  {
+		  	 //eint = 0;
+		  	 //eprev = 0;
+		  	 //repeat every dt second
+		  	 //e = desired - read_sensor()
+		  	 //edot = (e-eprev)/dt
+		  	 //eint = eint + e*dt
+		  	 //u = Kp*e + Ki*eint + Kd*edot + bias
+		  	 //eprev = e
+		  	 //send_control(u)
 
-		  	  			  e = desire - RPM;
-		  	  			  edot = (e-eprev)*1000.0; //(e-eprev)/1000 us = (e-eprev)*10000.0 second
-		  	  			  eint = eint + e/1000.0; //eint = eint + e*1000 us = eint + e/10000.0 second
-		  	  			  Kp = 4000; Ki = 2000; Kd = 60; bias = 8000;
-		  	  			  PWM = Kp*e + Ki*eint + Kd*edot + bias;
+		  	 e = desire - RPM;
+//			 e = V - RPM;
+		  	 edot = (e-eprev)*1000.0; //(e-eprev)/1000 us = (e-eprev)*1000.0 second
+		  	 eint = eint + e/1000.0; //eint = eint + e*1000 us = eint + e/1000.0 second
+		  	 Kp = 4000; Ki = 2000; Kd = 42; bias = 0; //kd = 60, bias = 8000;
+		  	 PWM = Kp*e + Ki*eint + Kd*edot + bias;
 
-		  	  			  if (PWM > 10000)
-		  	  			  {
-		  	  				  PWM = 10000;
-		  	  			  }
-		  	  			  else if (PWM <-10000)
-		  	  			  {
-		  	  				  PWM = -10000;
-		  	  			  }
+		  	 if (PWM > 10000)
+		  	 {
+		  	  	PWM = 10000;
+		  	 }
+		  	 else if (PWM <-10000)
+		  	 {
+		  	  	PWM = -10000;
+		  	 }
 
-		  	  			  eprev = e;
+		  	 eprev = e;
 
-		  	  			  if (PWM > 0)
-		  	  			  {
-		  	  				  PWMOut = PWM ;
-		  	  				  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
-		  	  				  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-		  	  			  }
-		  	  			  else if (PWM < 0)
-		  	  			  {
-		  	  				  PWMOut = PWM*-1;
-		  	  				  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
-		  	  				  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, PWMOut);
-		  	  			  }
+		  	 if (PWM > 0)
+		  	 {
+		  	  	PWMOut = PWM ;
+		  	  	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut);
+		  	  	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+		  	  }
+		  	  	else if (PWM < 0)
+		  	  {
+		  	  	PWMOut = PWM*-1;
+		  	  	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+		  	  	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, PWMOut);
+		  	  }
 
-		  	  		  }
-		  	  		  else
-		  	  		  {
-		  	  			  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
-		  	  			  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-		  	  		  }
+		  }
+			else
+			{
+				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+			}
 	  }
   }
   /* USER CODE END 3 */
