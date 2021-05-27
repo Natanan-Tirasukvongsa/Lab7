@@ -68,9 +68,10 @@ float PWM =0;
 //uint64_t sec = 0;
 //uint64_t t_o = 1000000;
 //uint64_t t_f = 6;
-//float V = 0;
-//float T = 0;
-//int on = 0;
+float T = 0;
+float A = 0;
+float V = 0;
+int on = 0;
 
 /* USER CODE END PV */
 
@@ -160,34 +161,51 @@ int main(void)
 	  if (micros() - Time >= 1000)
 	  {
 		  Time = micros();
-//		  if (T>=0 && T< 2)
+//		  if (T>=0 && T< 1)
 //		  {
-//			  V = desire*T/2;
+//			  A = desire*T/1;
 //			  T += 0.001;
 //			  on = 1;
 //		  }
-//		  else if (T >= 2 && T<3)
+//		  else if (T >= 1 && T<2)
 //		  {
-//			  V = V;
+//			  A = A;
 //			  T += 0.001;
 //			  on = 2;
 //		  }
-//		  else if (T >= 3 && T < 5)
+//		  else if (T >= 2 && T < 3)
 //		  {
-//			  V  = (5*desire - desire*T)/2;
+//			  A  = (1*desire - desire*T)/1;
 //			  T += 0.001;
 //			  on =3;
 //		  }
-//		  else if (T >= 5 && T < 10)
+//		  else if (T >= 3 && T < 4)
 //		  {
 //			  T += 0.001;
 //			  on = 4;
-//			  V = 0;
+//			  A = 0;
 //		  }
-//		  else if (T >= 10)
+//		  else if (T >= 4 && T<5)
+//		  {
+//			  T += 0.001;
+//			  on = 5;
+//			  A  = -desire*T/1;
+//		  }
+//		  else if (T>=5 && T<6)
+//		  {
+//			  T += 0.001;
+//			  on = 6;
+//			  A  = A;
+//		  }
+//		  else if (T>=6 && T<7)
+//		  {
+//		  	T += 0.001;
+//		  	on = 7;
+//		  	A  = -(1*desire - desire*T)/1;
+//		  }
+//		  else
 //		  {
 //			  T = 0;
-//			  on = 5;
 //		  }
 
 
@@ -204,6 +222,7 @@ int main(void)
 		  	 //send_control(u)
 
 		  	 e = desire - RPM;
+//			  V+= A;
 //			 e = V - RPM;
 		  	 edot = (e-eprev)*1000.0; //(e-eprev)/1000 us = (e-eprev)*1000.0 second
 		  	 eint = eint + e/1000.0; //eint = eint + e*1000 us = eint + e/1000.0 second
